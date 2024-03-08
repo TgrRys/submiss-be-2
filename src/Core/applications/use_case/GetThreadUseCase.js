@@ -11,7 +11,18 @@ class GetThreadUseCase {
       throw new Error('GET_THREAD_USE_CASE.THREAD_NOT_FOUND');
     }
 
-    const comments = await this._commentRepository.getCommentsByThreadId(threadId);
+    let comments = await this._commentRepository.getCommentsByThreadId(threadId);
+    
+    comments = comments.map(comment => {
+      if (comment.isDeleted) {
+        return {
+          ...comment,
+          content: 'komentar telah dihapus',
+        };
+      }
+      return comment;
+    });
+
     thread.setComments(comments);
 
     return thread;

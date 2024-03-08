@@ -66,5 +66,9 @@ describe('AddCommentUseCase', () => {
       .toHaveBeenCalledTimes(1);
     expect(mockCommentRepository.addComment)
       .toHaveBeenCalledWith(useCasePayload);
+  
+    expect(mockThreadRepository.isThreadExist.mock.invocationCallOrder[0])
+      .toBeLessThan(mockCommentRepository.addComment.mock.invocationCallOrder[0]);
   });
+
 });
