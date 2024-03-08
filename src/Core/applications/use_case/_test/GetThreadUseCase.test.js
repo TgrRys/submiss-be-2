@@ -31,30 +31,38 @@ describe("GetThreadUseCase", () => {
       date: "somedate",
       username: "superuser",
     };
-
+  
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
-
+  
     mockThreadRepository.getThreadById = jest
       .fn()
       .mockImplementation(() => Promise.resolve(new Thread(payload)));
     mockCommentRepository.getCommentsByThreadId = jest
       .fn()
       .mockImplementation(() => Promise.resolve([]));
-
+  
     /** creating use case instance */
     const getThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
     });
-
+  
     // Action
-    await getThreadUseCase.execute(threadId);
-
+    const result = await getThreadUseCase.execute(threadId);
+  
     // Assert
     expect(mockThreadRepository.getThreadById).toHaveBeenCalledWith(threadId);
     expect(mockCommentRepository.getCommentsByThreadId).toHaveBeenCalledWith(
       payload.id
     );
+    expect(result).toEqual({
+      id: payload.id,
+      title: payload.title,
+      body: payload.body,
+      date: payload.date,
+      username: payload.username,
+      comments: [],
+    });
   });
 });

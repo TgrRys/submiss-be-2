@@ -36,14 +36,16 @@ describe("Thread entities", () => {
       date: "somedate",
       username: "superuser",
     };
-
-    const { id, title, body, date, username } = new Thread(payload);
-
+  
+    const thread = new Thread(payload);
+    const { id, title, body, date, username, comments } = thread;
+  
     expect(id).toEqual(payload.id);
     expect(title).toEqual(payload.title);
     expect(body).toEqual(payload.body);
     expect(date).toEqual(payload.date);
     expect(username).toEqual(payload.username);
+    expect(comments).toEqual([]); 
   });
 
   it("should throw error if comment is not array", async () => {

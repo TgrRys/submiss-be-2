@@ -37,29 +37,33 @@ describe('AddCommentUseCase', () => {
       owner: 'test-user-123',
       content: 'comment',
     };
-
+  
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
-
+  
     /** mocking needed function */
     mockThreadRepository.isThreadExist = jest.fn()
       .mockImplementation(() => Promise.resolve('thread-123'));
     mockCommentRepository.addComment = jest.fn()
       .mockImplementation(() => Promise.resolve());
-
+  
     /** creating use case instance */
     const addCommentUseCase = new AddCommentUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
     });
-
+  
     // Action
     await addCommentUseCase.execute(useCasePayload);
-
+  
     // Assert
     expect(mockThreadRepository.isThreadExist)
+      .toHaveBeenCalledTimes(1);
+    expect(mockThreadRepository.isThreadExist)
       .toHaveBeenCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.addComment)
+      .toHaveBeenCalledTimes(1);
     expect(mockCommentRepository.addComment)
       .toHaveBeenCalledWith(useCasePayload);
   });

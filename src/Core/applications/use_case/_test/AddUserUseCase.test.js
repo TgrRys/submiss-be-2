@@ -103,4 +103,60 @@ describe("AddUserUseCase", () => {
       "DATABASE_ERROR"
     );
   });
+
+  it("should propagate the error when error occurs when creating RegisterUser instance", async () => {
+    // Arrange
+    const useCasePayload = {
+      username: "dicoding",
+      password: "secret",
+      // fullname is missing, causing RegisterUser constructor to throw an error
+    };
+  
+    /** creating dependency of use case */
+    const mockUserRepository = new UserRepository();
+    const mockPasswordHash = new PasswordHash();
+  
+    /** creating use case instance */
+    const getUserUseCase = new AddUserUseCase({
+      userRepository: mockUserRepository,
+      passwordHash: mockPasswordHash,
+    });
+  
+    // Action & Assert
+    await expect(getUserUseCase.execute(useCasePayload)).rejects.toThrowError(
+      "REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY"
+    );
+  });
+
+  it("should propagate the error when error occurs when hashing password", async () => {
+    // Arrange
+    const useCasePayload = {
+      username: "dicoding",
+      password: "secret",
+      fullname: "Dicoding Indonesia",
+    };
+  
+    /** creating dependency of use case */
+    const mockUserRepository = new UserRepository();
+    const mockPasswordHash = new PasswordHash();
+  
+    // mock passwordHash.hash to throw error
+    mockPasswordHash.hash = jest.fn(() =>
+      Promise.reject(new Error("HASHING_ERROR"))
+    );
+  
+    // Mock verifyAvailableUsername to return Promise.resolve()
+    jest.spyOn(mockUserRepository, 'verifyAvailableUsername').mockImplementation(() => Promise.resolve());
+  
+    /** creating use case instance */
+    const getUserUseCase = new AddUserUseCase({
+      userRepository: mockUserRepository,
+      passwordHash: mockPasswordHash,
+    });
+  
+    // Action & Assert
+    await expect(getUserUseCase.execute(useCasePayload)).rejects.toThrowError(
+      "HASHING_ERROR"
+    );
+  });
 });
