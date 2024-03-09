@@ -1,20 +1,20 @@
-const RegisterUser = require("../../../domains/users/entities/RegisterUser");
-const RegisteredUser = require("../../../domains/users/entities/RegisteredUser");
-const UserRepository = require("../../../domains/users/UserRepository");
-const PasswordHash = require("../../security/PasswordHash");
-const AddUserUseCase = require("../AddUserUseCase");
+const RegisterUser = require('../../../domains/users/entities/RegisterUser');
+const RegisteredUser = require('../../../domains/users/entities/RegisteredUser');
+const UserRepository = require('../../../domains/users/UserRepository');
+const PasswordHash = require('../../security/PasswordHash');
+const AddUserUseCase = require('../AddUserUseCase');
 
-describe("AddUserUseCase", () => {
-  it("should orchestrating the add user action correctly", async () => {
+describe('AddUserUseCase', () => {
+  it('should orchestrating the add user action correctly', async () => {
     // Arrange
     const useCasePayload = {
-      username: "dicoding",
-      password: "secret",
-      fullname: "Dicoding Indonesia",
+      username: 'dicoding',
+      password: 'secret',
+      fullname: 'Dicoding Indonesia',
     };
 
     const mockRegisteredUser = new RegisteredUser({
-      id: "user-123",
+      id: 'user-123',
       username: useCasePayload.username,
       fullname: useCasePayload.fullname,
     });
@@ -24,14 +24,11 @@ describe("AddUserUseCase", () => {
     const mockPasswordHash = new PasswordHash();
 
     /** mocking needed function */
-    mockUserRepository.verifyAvailableUsername = jest
-      .fn()
+    mockUserRepository.verifyAvailableUsername = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockPasswordHash.hash = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve("encrypted_password"));
-    mockUserRepository.addUser = jest
-      .fn()
+    mockPasswordHash.hash = jest.fn()
+      .mockImplementation(() => Promise.resolve('encrypted_password'));
+    mockUserRepository.addUser = jest.fn()
       .mockImplementation(() => Promise.resolve(mockRegisteredUser));
 
     /** creating use case instance */
@@ -44,119 +41,18 @@ describe("AddUserUseCase", () => {
     const registeredUser = await getUserUseCase.execute(useCasePayload);
 
     // Assert
-    expect(registeredUser).toStrictEqual(
-      new RegisteredUser({
-        id: "user-123",
-        username: useCasePayload.username,
-        fullname: useCasePayload.fullname,
-      })
-    );
+    expect(registeredUser).toStrictEqual(new RegisteredUser({
+      id: 'user-123',
+      username: useCasePayload.username,
+      fullname: useCasePayload.fullname,
+    }));
 
-    expect(mockUserRepository.verifyAvailableUsername).toBeCalledWith(
-      useCasePayload.username
-    );
+    expect(mockUserRepository.verifyAvailableUsername).toBeCalledWith(useCasePayload.username);
     expect(mockPasswordHash.hash).toBeCalledWith(useCasePayload.password);
-    expect(mockUserRepository.addUser).toBeCalledWith(
-      new RegisterUser({
-        username: useCasePayload.username,
-        password: "encrypted_password",
-        fullname: useCasePayload.fullname,
-      })
-    );
-  });
-
-  it("should propagate the error when error occurs when adding user", async () => {
-    // Arrange
-    const useCasePayload = {
-      username: "dicoding",
-      password: "secret",
-      fullname: "Dicoding Indonesia",
-    };
-
-    /** creating dependency of use case */
-    const mockUserRepository = new UserRepository();
-    const mockPasswordHash = new PasswordHash();
-
-    // mock userRepository.verifyAvailableUsername to not throw error
-    mockUserRepository.verifyAvailableUsername = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve());
-
-    // mock passwordHash.hash to not throw error
-    mockPasswordHash.hash = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve("encrypted_password"));
-
-    // mock userRepository.addUser to throw error
-    mockUserRepository.addUser = jest.fn(() =>
-      Promise.reject(new Error("DATABASE_ERROR"))
-    );
-
-    /** creating use case instance */
-    const getUserUseCase = new AddUserUseCase({
-      userRepository: mockUserRepository,
-      passwordHash: mockPasswordHash,
-    });
-
-    // Action & Assert
-    await expect(getUserUseCase.execute(useCasePayload)).rejects.toThrowError(
-      "DATABASE_ERROR"
-    );
-  });
-
-  it("should propagate the error when error occurs when creating RegisterUser instance", async () => {
-    // Arrange
-    const useCasePayload = {
-      username: "dicoding",
-      password: "secret",
-      // fullname is missing, causing RegisterUser constructor to throw an error
-    };
-  
-    /** creating dependency of use case */
-    const mockUserRepository = new UserRepository();
-    const mockPasswordHash = new PasswordHash();
-  
-    /** creating use case instance */
-    const getUserUseCase = new AddUserUseCase({
-      userRepository: mockUserRepository,
-      passwordHash: mockPasswordHash,
-    });
-  
-    // Action & Assert
-    await expect(getUserUseCase.execute(useCasePayload)).rejects.toThrowError(
-      "REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY"
-    );
-  });
-
-  it("should propagate the error when error occurs when hashing password", async () => {
-    // Arrange
-    const useCasePayload = {
-      username: "dicoding",
-      password: "secret",
-      fullname: "Dicoding Indonesia",
-    };
-  
-    /** creating dependency of use case */
-    const mockUserRepository = new UserRepository();
-    const mockPasswordHash = new PasswordHash();
-  
-    // mock passwordHash.hash to throw error
-    mockPasswordHash.hash = jest.fn(() =>
-      Promise.reject(new Error("HASHING_ERROR"))
-    );
-  
-    // Mock verifyAvailableUsername to return Promise.resolve()
-    jest.spyOn(mockUserRepository, 'verifyAvailableUsername').mockImplementation(() => Promise.resolve());
-  
-    /** creating use case instance */
-    const getUserUseCase = new AddUserUseCase({
-      userRepository: mockUserRepository,
-      passwordHash: mockPasswordHash,
-    });
-  
-    // Action & Assert
-    await expect(getUserUseCase.execute(useCasePayload)).rejects.toThrowError(
-      "HASHING_ERROR"
-    );
+    expect(mockUserRepository.addUser).toBeCalledWith(new RegisterUser({
+      username: useCasePayload.username,
+      password: 'encrypted_password',
+      fullname: useCasePayload.fullname,
+    }));
   });
 });

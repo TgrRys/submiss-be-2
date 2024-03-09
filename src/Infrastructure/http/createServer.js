@@ -1,11 +1,11 @@
-const Hapi = require('@hapi/hapi');
-const Jwt = require('@hapi/jwt');
-const ClientError = require('../../Common/exceptions/ClientError');
-const DomainErrorTranslator = require('../../Common/exceptions/DomainErrorTranslator');
-const users = require('../../Core/interfaces/http/api/users');
-const authentications = require('../../Core/interfaces/http/api/authentications');
-const threads = require('../../Core/interfaces/http/api/threads');
-const comments = require('../../Core/interfaces/http/api/comments');
+const Hapi = require("@hapi/hapi");
+const Jwt = require("@hapi/jwt");
+const ClientError = require("../../Common/exceptions/ClientError");
+const DomainErrorTranslator = require("../../Common/exceptions/DomainErrorTranslator");
+const users = require("../../Core/interfaces/http/api/users");
+const authentications = require("../../Core/interfaces/http/api/authentications");
+const threads = require("../../Core/interfaces/http/api/threads");
+const comments = require("../../Core/interfaces/http/api/comments");
 
 const createServer = async (container) => {
   const server = Hapi.server({
@@ -19,7 +19,7 @@ const createServer = async (container) => {
     },
   ]);
 
-  server.auth.strategy('api_forum_jwt', 'jwt', {
+  server.auth.strategy("api_forum_jwt", "jwt", {
     keys: process.env.ACCESS_TOKEN_KEY,
     verify: {
       aud: false,
@@ -54,14 +54,23 @@ const createServer = async (container) => {
     },
   ]);
 
-  server.ext('onPreResponse', (request, h) => {
+  server.route({
+    method: "GET",
+    path: "/",
+    handler: () => ({
+      value: "Hello Dicoding!",
+    }),
+  });
+
+  server.ext("onPreResponse", (request, h) => {
     const { response } = request;
 
     if (response instanceof Error) {
       const translatedError = DomainErrorTranslator.translate(response);
+
       if (translatedError instanceof ClientError) {
         const newResponse = h.response({
-          status: 'fail',
+          status: "fail",
           message: translatedError.message,
         });
         newResponse.code(translatedError.statusCode);
@@ -71,12 +80,13 @@ const createServer = async (container) => {
         return h.continue;
       }
       const newResponse = h.response({
-        status: 'error',
-        message: 'terjadi kegagalan pada server kami',
+        status: "error",
+        message: "terjadi kegagalan pada server kami",
       });
       newResponse.code(500);
       return newResponse;
     }
+
     return h.continue;
   });
 

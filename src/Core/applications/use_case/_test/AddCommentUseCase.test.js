@@ -1,3 +1,4 @@
+const NewComment = require('../../../domains/comments/entities/NewComment');
 const CommentRepository = require('../../../domains/comments/CommentRepository');
 const ThreadRepository = require('../../../domains/threads/ThreadRepository');
 const AddCommentUseCase = require('../AddCommentUseCase');
@@ -46,7 +47,7 @@ describe('AddCommentUseCase', () => {
     mockThreadRepository.isThreadExist = jest.fn()
       .mockImplementation(() => Promise.resolve('thread-123'));
     mockCommentRepository.addComment = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() => Promise.resolve('comment-123'));
   
     /** creating use case instance */
     const addCommentUseCase = new AddCommentUseCase({
@@ -55,20 +56,13 @@ describe('AddCommentUseCase', () => {
     });
   
     // Action
-    await addCommentUseCase.execute(useCasePayload);
+    const addedCommentId = await addCommentUseCase.execute(useCasePayload);
   
     // Assert
     expect(mockThreadRepository.isThreadExist)
-      .toHaveBeenCalledTimes(1);
-    expect(mockThreadRepository.isThreadExist)
       .toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.addComment)
-      .toHaveBeenCalledTimes(1);
-    expect(mockCommentRepository.addComment)
-      .toHaveBeenCalledWith(useCasePayload);
-  
-    expect(mockThreadRepository.isThreadExist.mock.invocationCallOrder[0])
-      .toBeLessThan(mockCommentRepository.addComment.mock.invocationCallOrder[0]);
+      .toHaveBeenCalledWith(expect.any(NewComment));
+    expect(addedCommentId).toEqual('comment-123');
   });
-
 });

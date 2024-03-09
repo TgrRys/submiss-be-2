@@ -1,5 +1,5 @@
-const AddCommentUseCase = require('../../../../../Core/applications/use_case/AddCommentUseCase');
-const DeleteCommentUseCase = require('../../../../../Core/applications/use_case/DeleteCommentUseCase');
+const AddCommentUseCase = require('../../../../applications/use_case/AddCommentUseCase');
+const DeleteCommentUseCase = require('../../../../applications/use_case/DeleteCommentUseCase');
 
 class CommentsHandler {
   constructor(container) {
@@ -34,13 +34,6 @@ class CommentsHandler {
   async deleteCommentHandler(request) {
     const { id: owner } = request.auth.credentials;
     const { threadId, commentId: id } = request.params;
-
-    /**
-     * @TODO 9
-     * Eksekusi useCase DeleteCommentUseCase untuk menjalankan aksi **menghapus komentar**
-     *
-     * Untuk mendapatkan useCase, pastikan Anda memanfaatkan method `this._container.getInstance`
-     */
     const useCase = this._container.getInstance(DeleteCommentUseCase.name);
     await useCase.execute({ id, owner, threadId });
 

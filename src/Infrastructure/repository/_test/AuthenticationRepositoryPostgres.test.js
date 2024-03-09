@@ -24,9 +24,7 @@ describe('AuthenticationRepository postgres', () => {
       // Assert
       const tokens = await AuthenticationsTableTestHelper.findToken(token);
       expect(tokens).toHaveLength(1);
-
-      const { token: resultToken } = tokens[0];
-      expect(resultToken).toBe(token);
+      expect(tokens[0].token).toBe(token);
     });
   });
 

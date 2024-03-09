@@ -10,7 +10,6 @@ const UserRepository = require('../Core/domains/users/UserRepository');
 const PasswordHash = require('../Core/applications/security/PasswordHash');
 const UserRepositoryPostgres = require('./repository/UserRepositoryPostgres');
 const BcryptPasswordHash = require('./security/BcryptPasswordHash');
-
 const AddUserUseCase = require('../Core/applications/use_case/AddUserUseCase');
 const AuthenticationTokenManager = require('../Core/applications/security/AuthenticationTokenManager');
 const JwtTokenManager = require('./security/JwtTokenManager');

@@ -5,8 +5,8 @@ const PasswordHash = require('../../security/PasswordHash');
 const LoginUserUseCase = require('../LoginUserUseCase');
 const NewAuth = require('../../../domains/authentications/entities/NewAuth');
 
-describe('GetAuthenticationUseCase', () => {
-  it('should orchestrating the get authentication action correctly', async () => {
+describe('LoginUserUseCase', () => {
+  it('should orchestrating the login user action correctly', async () => {
     // Arrange
     const useCasePayload = {
       username: 'dicoding',

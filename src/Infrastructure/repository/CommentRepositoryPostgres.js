@@ -24,14 +24,6 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async isCommentExist(commentId) {
-    /**
-     * @TODO 8
-     * Lengkapi kode pada method `isCommentExist` yang berguna untuk
-     * melihat apakah komentar berdasarkan `commentId` sudah ada di database atau belum.
-     *
-     * Method ini harus mengembalikan `true` jika komentar sudah tersedia dan
-     * mengembalikan `false` jika komentar belum tersedia.
-     */
     const query = {
       text: 'SELECT id FROM comments WHERE id = $1',
       values: [commentId],
