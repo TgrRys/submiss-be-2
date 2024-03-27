@@ -11,7 +11,7 @@ describe('/users endpoint', () => {
   afterEach(async () => {
     await UsersTableTestHelper.cleanTable();
   });
-  //sitegarturu
+  //sitegarturu2
   describe('when POST /users', () => {
     it('should response 201 and persisted user', async () => {
       // Arrange
