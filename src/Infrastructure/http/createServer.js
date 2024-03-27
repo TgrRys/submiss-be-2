@@ -59,7 +59,6 @@ const createServer = async (container) => {
     path: "/",
     handler: () => ({
       value: "Hello World!",
-      // tegar
     }),
   });
 
