@@ -1,0 +1,41 @@
+limit_req_zone $binary_remote_addr zone=mylimit:10m rate=90r/m;
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    include snippets/self-signed.conf;
+    include snippets/ssl-params.conf;
+
+    index index.html index.htm index.nginx-debian.html;
+
+  server_name tegar.simagang.my.id www.tegar.simagang.my.id;
+
+    location / {
+      proxy_pass http://localhost:3000; # your app's port
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+      proxy_set_header Host $host;
+      proxy_cache_bypass $http_upgrade;
+ 
+    # …
+   }
+   
+   location /threads {
+      limit_req zone=mylimit burst=90 nodelay;
+      proxy_pass http://localhost:3000; # your app's port
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+      proxy_set_header Host $host;
+      proxy_cache_bypass $http_upgrade;
+    }
+}
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name tegar.simagang.my.id www.tegar.simagang.my.id;
+
+    return 302 https://$server_name$request_uri;
+}
+
